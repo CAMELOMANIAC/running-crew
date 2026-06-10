@@ -2,6 +2,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { Application, extend } from "@pixi/react";
 import spriteImage from "./assets/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
 import { Assets, Container, Graphics, Rectangle, Sprite, Texture, AnimatedSprite } from "pixi.js";
+import { listen } from "@tauri-apps/api/event";
 extend({
   Container,
   Graphics,
@@ -12,6 +13,10 @@ extend({
 const FRAME_WIDTH = 50;
 const FRAME_HEIGHT = 50;
 const TOTAL_FRAMES = 8;
+
+listen("global-input", (event) => {
+  console.log(event);
+});
 
 const Home = () => {
   const parentRef = useRef<HTMLDivElement>(null);
