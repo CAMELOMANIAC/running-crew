@@ -10,6 +10,7 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "label": "main-window",
@@ -23,7 +24,7 @@
         "label": "playable-window",
         "title": "running-crew",
         "width": 400,
-        "height": 50,
+        "height": 100,
         "decorations": false,
         "transparent": true,
         "shadow": false,
