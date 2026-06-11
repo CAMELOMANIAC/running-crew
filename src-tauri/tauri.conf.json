@@ -21,7 +21,7 @@
         "transparent": true
       },
       {
-        "label": "playable-window",
+        "label": "field-window",
         "title": "running-crew",
         "width": 400,
         "height": 100,
@@ -30,7 +30,7 @@
         "shadow": false,
         "alwaysOnTop": true,
         "visibleOnAllWorkspaces": true,
-        "url": "index.html#/home"
+        "url": "index.html#/field"
       }
     ],
     "security": {

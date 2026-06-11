@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router";
 import App from "./App";
-import Home from "./Home";
+import Field from "./Field";
 
 const router = createHashRouter([
   {
@@ -10,8 +10,8 @@ const router = createHashRouter([
     element: <App />,
   },
   {
-    path: "/home",
-    element: <Home />,
+    path: "/field",
+    element: <Field />,
   },
 ]);
 

@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { Application, extend } from "@pixi/react";
 import walkImage from "./assets/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
 import runImage from "./assets/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
@@ -15,16 +15,28 @@ const FRAME_WIDTH = 50;
 const FRAME_HEIGHT = 50;
 const TOTAL_FRAMES = 8;
 
-const Home = () => {
+const Field = () => {
   const parentRef = useRef<HTMLDivElement>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [walkFrames, setWalkFrames] = useState<Texture[]>([]);
   const [runFrames, setRunFrames] = useState<Texture[]>([]);
+  const [isWindowSetting, setIsWindowSetting] = useState(false);
 
-  listen("global-input", (event) => {
-    console.log(event);
-    setIsRunning(true);
-  });
+  useEffect(() => {
+    const unlistenInputSignalPromise = listen("global-input", (event) => {
+      console.log(event);
+      setIsRunning((prev) => !prev);
+    });
+
+    const unlistenSettingSignalPromise = listen<{ isWindowSetting: boolean }>("WindowSetting-signal", (event) => {
+      setIsWindowSetting(event.payload.isWindowSetting);
+    });
+
+    return () => {
+      unlistenInputSignalPromise.then((unlisten) => unlisten());
+      unlistenSettingSignalPromise.then((unlisten) => unlisten());
+    };
+  }, []);
 
   useEffect(() => {
     async function loadAllTextures() {
@@ -63,29 +75,53 @@ const Home = () => {
   };
 
   return (
-    <div ref={parentRef} style={{ width: "100vw", height: "100vh" }}>
+    <main ref={parentRef} style={containerStyleObj}>
       <Application resizeTo={parentRef} backgroundAlpha={0}>
-        <pixiContainer x={50} y={50}>
-          <pixiAnimatedSprite
-            autoPlay={true}
-            textures={isRunning ? runFrames : walkFrames}
-            animationSpeed={isRunning ? 0.15 : 0.3} // 재생 속도
-            anchor={0.5}
-            ref={spriteRefCallback}
-          />
+        <pixiContainer>
+          {(isRunning ? runFrames : walkFrames).length > 0 && (
+            <pixiAnimatedSprite
+              autoPlay={true}
+              textures={isRunning ? runFrames : walkFrames}
+              animationSpeed={0.15}
+              scale={1}
+              ref={spriteRefCallback}
+            />
+          )}
         </pixiContainer>
       </Application>
-      <div style={styleObj} data-tauri-drag-region>
-        hello
-      </div>
-    </div>
+      {isWindowSetting && (
+        <div style={settingFrameStyleObj} data-tauri-drag-region data-tauri-drag-resize-region>
+          <div style={movingIconStyleObj}>✥</div>
+        </div>
+      )}
+    </main>
   );
 };
 
-export default Home;
+export default Field;
 
-const styleObj: CSSProperties = {
-  backgroundColor: "black",
-  width: "100%",
+const settingFrameStyleObj: CSSProperties = {
+  width: "100vw",
+  height: "100vh",
+  position: "fixed",
+  display: "flex",
+  alignItems: "center",
+  justifyItems: "center",
+  cursor: "move",
+  border: "5px solid black",
+};
+
+const movingIconStyleObj: CSSProperties = {
   height: "100%",
+  position: "relative",
+  backgroundColor: "black",
+  color: "white",
+  pointerEvents: "none",
+};
+
+const containerStyleObj: CSSProperties = {
+  display: "flex",
+  flexDirection: "row",
+  width: "100vw",
+  height: "100vh",
 };
