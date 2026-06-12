@@ -1,8 +1,9 @@
 import { AnimatedSprite, Assets, Rectangle, Texture } from "pixi.js";
-import { memo, RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import walkImage from "./assets/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
 import runImage from "./assets/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
 import { useTick } from "@pixi/react";
+import { runnerStateType } from "./types/globalTypes";
 
 const FRAME_WIDTH = 50;
 const FRAME_HEIGHT = 50;
@@ -13,10 +14,10 @@ interface RunnerProps {
 }
 interface RunnerProps {
   number: number;
-  gameStateRef: RefObject<{ [key: number]: { isRunning: boolean } }>;
+  runnerState: runnerStateType;
 }
 
-const Runner = memo(({ number, gameStateRef }: RunnerProps) => {
+const Runner = memo(({ number, runnerState }: RunnerProps) => {
   const [walkFrames, setWalkFrames] = useState<Texture[]>([]);
   const [runFrames, setRunFrames] = useState<Texture[]>([]);
 
@@ -55,7 +56,7 @@ const Runner = memo(({ number, gameStateRef }: RunnerProps) => {
   useTick(() => {
     if (!spriteRef.current || walkFrames.length === 0 || runFrames.length === 0) return;
 
-    const myIsRunning = gameStateRef.current[number]?.isRunning || false;
+    const myIsRunning = runnerState[number]?.isRunning || false;
 
     if (myIsRunning !== currentGraphicState.current) {
       currentGraphicState.current = myIsRunning;
