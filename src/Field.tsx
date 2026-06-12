@@ -3,12 +3,16 @@ import { extend } from "@pixi/react";
 import { Container, Graphics, Sprite, AnimatedSprite } from "pixi.js";
 import { listen } from "@tauri-apps/api/event";
 import FieldCanvas from "./FieldCanvas";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+
 extend({
   Container,
   Graphics,
   Sprite,
   AnimatedSprite,
 });
+
+const appWindow = getCurrentWebviewWindow(); //클릭 관통
 
 const Field = () => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -23,6 +27,10 @@ const Field = () => {
       unlistenSettingSignalPromise.then((unlisten) => unlisten());
     };
   }, []);
+
+  useEffect(() => {
+    appWindow.setIgnoreCursorEvents(!isWindowSetting);
+  }, [isWindowSetting]);
 
   return (
     <main ref={parentRef} style={containerStyleObj}>

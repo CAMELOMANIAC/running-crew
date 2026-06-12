@@ -1,5 +1,5 @@
 import { AnimatedSprite, Assets, Rectangle, Texture } from "pixi.js";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, RefObject, useCallback, useEffect, useRef, useState } from "react";
 import walkImage from "./assets/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
 import runImage from "./assets/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
 import { useTick } from "@pixi/react";
@@ -13,7 +13,7 @@ interface RunnerProps {
 }
 interface RunnerProps {
   number: number;
-  gameStateRef: React.MutableRefObject<{ [key: number]: { isRunning: boolean } }>;
+  gameStateRef: RefObject<{ [key: number]: { isRunning: boolean } }>;
 }
 
 const Runner = memo(({ number, gameStateRef }: RunnerProps) => {
@@ -55,10 +55,8 @@ const Runner = memo(({ number, gameStateRef }: RunnerProps) => {
   useTick(() => {
     if (!spriteRef.current || walkFrames.length === 0 || runFrames.length === 0) return;
 
-    // 부모의 데이터 저장소에서 '나의 번호'에 맞는 상태만 확인
     const myIsRunning = gameStateRef.current[number]?.isRunning || false;
 
-    // 내 상태가 달라졌을 때만 텍스처 교체
     if (myIsRunning !== currentGraphicState.current) {
       currentGraphicState.current = myIsRunning;
 

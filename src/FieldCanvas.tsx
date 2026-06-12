@@ -27,13 +27,11 @@ interface GlobalInputEventType {
 }
 
 const CanvasContent = memo(() => {
-  // 개별 러너들의 상태를 관리하는 고성능 논리 저장소
   const gameStateRef = useRef<GameState>({
     0: { isRunning: false, inputCode: ["KeyA", "KeyD"] },
     1: { isRunning: false, inputCode: ["Left", "KeyB"] },
   });
 
-  // 타이머 객체들도 러너별로 관리하여 서로 간섭하지 않게 합니다.
   const timersRef = useRef<{ [key: number]: number }>({});
 
   useEffect(() => {
@@ -61,7 +59,6 @@ const CanvasContent = memo(() => {
 
     return () => {
       unlistenPromise.then((unlisten) => unlisten());
-      // 컴포넌트 언마운트 시 모든 타이머 정리
       Object.values(timersRef.current).forEach(clearTimeout);
     };
   }, []);
