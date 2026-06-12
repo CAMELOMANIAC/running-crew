@@ -2,6 +2,7 @@ import { Application } from "@pixi/react";
 import { memo, RefObject, useEffect, useRef } from "react";
 import Runner from "./Runner";
 import { listen } from "@tauri-apps/api/event";
+import { useGameStore } from "./stores/score";
 
 interface FieldCanvasProps {
   parentRef: RefObject<HTMLDivElement | null>;
@@ -27,6 +28,7 @@ interface GlobalInputEventType {
 }
 
 const CanvasContent = memo(() => {
+  const addScore = useGameStore((state) => state.addScore);
   const gameStateRef = useRef<GameState>({
     0: { isRunning: false, inputCode: ["KeyA", "KeyD"] },
     1: { isRunning: false, inputCode: ["Left", "KeyB"] },
@@ -52,14 +54,27 @@ const CanvasContent = memo(() => {
       gameStateRef.current[targetRunner].isRunning = true;
 
       clearTimeout(timersRef.current[targetRunner]);
+      //달릴때
       timersRef.current[targetRunner] = setTimeout(() => {
         gameStateRef.current[targetRunner].isRunning = false;
+        addScore(targetRunner, 10);
       }, 1000);
     });
+
+    //달리지 않을때
+    const idleScoreTimer = setInterval(() => {
+      const targetRunnerEntry = Object.entries(gameStateRef.current);
+      targetRunnerEntry.forEach((_, index) => {
+        if (gameStateRef.current[index].isRunning === false) {
+          addScore(index, 1);
+        }
+      });
+    }, 1000);
 
     return () => {
       unlistenPromise.then((unlisten) => unlisten());
       Object.values(timersRef.current).forEach(clearTimeout);
+      clearInterval(idleScoreTimer);
     };
   }, []);
 

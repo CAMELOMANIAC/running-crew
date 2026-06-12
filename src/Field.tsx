@@ -4,6 +4,7 @@ import { Container, Graphics, Sprite, AnimatedSprite } from "pixi.js";
 import { listen } from "@tauri-apps/api/event";
 import FieldCanvas from "./FieldCanvas";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import Score from "./Score";
 
 extend({
   Container,
@@ -16,7 +17,7 @@ const appWindow = getCurrentWebviewWindow(); //클릭 관통
 
 const Field = () => {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [isWindowSetting, setIsWindowSetting] = useState(false);
+  const [isWindowSetting, setIsWindowSetting] = useState(false); //필드 화면 설정
 
   useEffect(() => {
     const unlistenSettingSignalPromise = listen<{ isWindowSetting: boolean }>("WindowSetting-signal", (event) => {
@@ -40,6 +41,7 @@ const Field = () => {
           <div style={movingIconStyleObj}>✥</div>
         </div>
       )}
+      <Score />
     </main>
   );
 };
