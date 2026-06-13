@@ -4,15 +4,13 @@ import walkImage from "../../../assets/cats/Cat-1-Walk.png"; //https://luizmelo.
 import runImage from "../../../assets/cats/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
 import { useApplication, useTick } from "@pixi/react";
 import { RunnerStateType } from "../../../types/globalTypes";
+import SpeechBubble from "./SpeechBubble";
 
 const FRAME_WIDTH = 50;
 const FRAME_HEIGHT = 50;
 const TOTAL_FRAMES = 8;
 
-interface RunnerProps {
-  number: number;
-}
-interface RunnerProps {
+export interface RunnerProps {
   number: number;
   runnerState: RunnerStateType;
 }
@@ -67,11 +65,12 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
       currentGraphicState.current = myIsRunning;
       const nextTextures = myIsRunning ? runFrames : walkFrames;
 
-      // 부모 컨테이너 내부의 모든 자식(스프라이트 5개)을 돌며 텍스처 교체 및 재생
+      // 안전하게 AnimatedSprite만 골라서 업데이트합니다.
       containerRef.current.children.forEach((child) => {
-        const sprite = child as AnimatedSprite;
-        sprite.textures = nextTextures;
-        sprite.play();
+        if (child instanceof AnimatedSprite) {
+          child.textures = nextTextures;
+          child.play();
+        }
       });
     }
   });
@@ -80,7 +79,12 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
   const containerRefCallback = useCallback((instance: Container | null) => {
     containerRef.current = instance;
     if (instance) {
-      instance.children.forEach((child) => (child as AnimatedSprite).play());
+      // 자식들 중 오직 'AnimatedSprite' 인스턴스인 것만 필터링해서 play() 호출
+      instance.children.forEach((child) => {
+        if (child instanceof AnimatedSprite) {
+          child.play();
+        }
+      });
     }
   }, []);
 
@@ -89,7 +93,7 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
   return (
     hasTextures && (
       <pixiContainer x={number * FRAME_WIDTH} y={bottomY} ref={containerRefCallback}>
-        {/* 상하좌우 외곽선용 (Ref 없음) */}
+        {/* 상하좌우 외곽선용 */}
         <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={-2} y={0} animationSpeed={0.15} />
         <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={2} y={0} animationSpeed={0.15} />
         <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={0} y={-2} animationSpeed={0.15} />
@@ -100,8 +104,9 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
         <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={1} y={-1} animationSpeed={0.15} />
         <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={-1} y={1} animationSpeed={0.15} />
 
-        {/* 정중앙 원본 캐릭터 (Ref 없음) */}
+        {/* 정중앙 원본 캐릭터 */}
         <pixiAnimatedSprite textures={walkFrames} x={0} y={0} animationSpeed={0.15} />
+        <SpeechBubble number={number} runnerState={runnerState} />
       </pixiContainer>
     )
   );

@@ -1,6 +1,6 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { extend } from "@pixi/react";
-import { Container, Graphics, Sprite, AnimatedSprite } from "pixi.js";
+import { Container, Graphics, Sprite, Text, AnimatedSprite } from "pixi.js";
 import { listen } from "@tauri-apps/api/event";
 import FieldCanvas from "./_components/FieldCanvas";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
@@ -13,6 +13,7 @@ extend({
   Container,
   Graphics,
   Sprite,
+  Text,
   AnimatedSprite,
 });
 
