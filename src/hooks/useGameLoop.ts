@@ -37,7 +37,7 @@ const useGameLoop = () => {
       // O, I, I, A 시퀀스 매칭 검사
       const isOiiaCombo = currentGlobalKeys.slice(-4).join(",") === "o,i,i,a";
       if (isOiiaCombo) {
-        oiiaTimeRef.current = 2.0; // 4초 동안 이스터에그 지속
+        oiiaTimeRef.current = 6.0; // 4초 동안 이스터에그 지속
         activeGlobalRunsRef.current = []; // 즉시 버퍼 초기화
         useFieldStore.setState({
           globalInputBuffer: [],

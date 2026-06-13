@@ -67,17 +67,16 @@ const settingFrameStyleObj: CSSProperties = {
   height: "100vh",
   position: "fixed",
   display: "flex",
-  alignItems: "center",
-  justifyItems: "center",
+  alignItems: "flex-start",
+  justifyItems: "flex-start",
   cursor: "move",
-  border: "5px solid black",
+  border: "5px solid yellow",
 };
 
 const movingIconStyleObj: CSSProperties = {
-  height: "100%",
   position: "relative",
-  backgroundColor: "black",
-  color: "white",
+  backgroundColor: "yellow",
+  color: "black",
   pointerEvents: "none",
 };
 

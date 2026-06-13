@@ -30,6 +30,7 @@ export const GifPlayer = memo(({ src, x = 0, y = 0, width, height, visible = tru
       if (containerRef.current) {
         containerRef.current.addChild(gifInstance);
         if (visible) {
+          gifInstance.currentFrame = 0;
           gifInstance.play();
         } else {
           gifInstance.stop();
@@ -53,6 +54,7 @@ export const GifPlayer = memo(({ src, x = 0, y = 0, width, height, visible = tru
     if (gifSpriteRef.current) {
       gifSpriteRef.current.visible = visible;
       if (visible) {
+        gifSpriteRef.current.currentFrame = 0;
         gifSpriteRef.current.play();
       } else {
         gifSpriteRef.current.stop();
