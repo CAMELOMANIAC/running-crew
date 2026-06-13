@@ -56,7 +56,7 @@ pub fn run() {
                     }
 
                     // ⭐️ 중요: 이벤트 이름을 "global-input"으로 통일해서 프론트로 한 번에 쏩니다.
-                    let _ = app_handle.emit("global-input", payload);
+                    let _ = app_handle.emit("globalInputSignal", payload);
                 }) {
                     println!("rdev 감시 오류: {:?}", error);
                 }

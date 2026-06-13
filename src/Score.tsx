@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
-import { useGameStore } from "./stores/gameStore";
+import { useFieldStore } from "./stores/fieldStore";
 
 const Score = () => {
-  const displayScore = useGameStore((state) => state.displayTotalScore);
+  const displayScore = useFieldStore((state) => state.displayTotalScore);
 
   return <div style={scoreStyleObj}>{displayScore}</div>;
 };
