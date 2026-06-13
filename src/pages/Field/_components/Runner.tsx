@@ -1,9 +1,9 @@
 import { AnimatedSprite, Assets, Container, Rectangle, Texture } from "pixi.js";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import walkImage from "./assets/cats/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
-import runImage from "./assets/cats/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
-import { useTick } from "@pixi/react";
-import { RunnerStateType } from "./types/globalTypes";
+import walkImage from "../../../assets/cats/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
+import runImage from "../../../assets/cats/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
+import { useApplication, useTick } from "@pixi/react";
+import { RunnerStateType } from "../../../types/globalTypes";
 
 const FRAME_WIDTH = 50;
 const FRAME_HEIGHT = 50;
@@ -23,6 +23,11 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
 
   const containerRef = useRef<Container | null>(null);
   const currentGraphicState = useRef<boolean>(false);
+  const { app } = useApplication();
+
+  if (!app || !app.screen) return null;
+
+  const bottomY = Math.round(app.screen.height - FRAME_HEIGHT);
 
   useEffect(() => {
     async function loadAllTextures() {
@@ -83,12 +88,17 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
 
   return (
     hasTextures && (
-      <pixiContainer x={number * FRAME_WIDTH} ref={containerRefCallback}>
+      <pixiContainer x={number * FRAME_WIDTH} y={bottomY} ref={containerRefCallback}>
         {/* 상하좌우 외곽선용 (Ref 없음) */}
-        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={-1} y={0} animationSpeed={0.15} />
-        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={1} y={0} animationSpeed={0.15} />
-        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={0} y={-1} animationSpeed={0.15} />
-        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={0} y={1} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={-2} y={0} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={2} y={0} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={0} y={-2} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={0} y={2} animationSpeed={0.15} />
+
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={-1} y={-1} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={1} y={1} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={1} y={-1} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={-1} y={1} animationSpeed={0.15} />
 
         {/* 정중앙 원본 캐릭터 (Ref 없음) */}
         <pixiAnimatedSprite textures={walkFrames} x={0} y={0} animationSpeed={0.15} />

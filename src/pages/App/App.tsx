@@ -1,8 +1,8 @@
 import { ChangeEvent, CSSProperties, useEffect } from "react";
 import "./App.css";
 import { emit, listen } from "@tauri-apps/api/event";
-import { useAppStore } from "./stores/appStore";
-import { EMIT_EVENT } from "./types/globalTypes";
+import { useAppStore } from "../../stores/appStore";
+import { EMIT_EVENT } from "../../types/globalTypes";
 //앱 윈도우 진입점
 function App() {
   useEffect(() => {

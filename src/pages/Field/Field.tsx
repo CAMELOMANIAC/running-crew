@@ -2,12 +2,12 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { extend } from "@pixi/react";
 import { Container, Graphics, Sprite, AnimatedSprite } from "pixi.js";
 import { listen } from "@tauri-apps/api/event";
-import FieldCanvas from "./FieldCanvas";
+import FieldCanvas from "./_components/FieldCanvas";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import Score from "./Score";
-import useGameLoop from "./hooks/useGameLoop";
-import { EMIT_EVENT, RunnerStatsType } from "./types/globalTypes";
-import { useFieldStore } from "./stores/fieldStore";
+import Score from "../../Score";
+import useGameLoop from "../../hooks/useGameLoop";
+import { EMIT_EVENT, RunnerStatsType } from "../../types/globalTypes";
+import { useFieldStore } from "../../stores/fieldStore";
 
 extend({
   Container,

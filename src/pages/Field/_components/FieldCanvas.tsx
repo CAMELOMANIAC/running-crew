@@ -1,7 +1,7 @@
 import { Application } from "@pixi/react";
 import { memo, RefObject } from "react";
 import Runner from "./Runner";
-import { useFieldStore } from "./stores/fieldStore";
+import { useFieldStore } from "../../../stores/fieldStore";
 
 interface FieldCanvasProps {
   parentRef: RefObject<HTMLDivElement | null>;
