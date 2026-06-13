@@ -9,6 +9,8 @@ interface FieldState {
   // UI 컴포넌트가 바라보고 리렌더링할 화면 표시용 데이터
   displayScores: Record<number, number>;
   displayTotalScore: number;
+  globalInputBuffer: string[];
+  isOiiaActive: boolean;
 
   /**
    * 받아온 러너 상태 데이터를 이용해 러너 상태로 초기화하는 함수
@@ -33,6 +35,8 @@ export const useFieldStore = create<FieldState>((set, get) => ({
   runnerState: {},
   displayScores: {},
   displayTotalScore: 0,
+  globalInputBuffer: [],
+  isOiiaActive: false,
 
   addScore: (runnerId, amount) => {
     set((state) => {

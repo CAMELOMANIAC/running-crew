@@ -13,6 +13,8 @@ const formatKey = (keyCode: string) => {
 const useGameLoop = () => {
   const addScore = useFieldStore((state) => state.addScore);
   const activeRunsRef = useRef<Record<number, { key: string; remainingTime: number }[]>>({});
+  const activeGlobalRunsRef = useRef<{ key: string; remainingTime: number }[]>([]);
+  const oiiaTimeRef = useRef<number>(0);
   const previousTimeRef = useRef<number | null>(null);
   const syncDisplayScoreTimerRef = useRef(0);
   const updateScoreTimerRef = useRef(0);
@@ -21,7 +23,33 @@ const useGameLoop = () => {
     // 키 입력 이벤트 리스너
     const unlistenGlobalInputPromise = listen(EMIT_EVENT.GLOBAL_INPUT_SIGNAL, (event: GlobalInputEventType) => {
       const incomingKeyCode = event.payload.mouse_button || event.payload.key_code;
-      const currentRunnerState = useFieldStore.getState().runnerState;
+      const formattedKey = formatKey(incomingKeyCode);
+
+      // 전역 입력 버퍼 업데이트 (각 입력마다 독립된 1초의 수명을 가짐)
+      activeGlobalRunsRef.current.push({
+        key: formattedKey,
+        remainingTime: 1.0,
+      });
+
+      const store = useFieldStore.getState();
+      const currentGlobalKeys = activeGlobalRunsRef.current.map((run) => run.key);
+
+      // O, I, I, A 시퀀스 매칭 검사
+      const isOiiaCombo = currentGlobalKeys.slice(-4).join(",") === "o,i,i,a";
+      if (isOiiaCombo) {
+        oiiaTimeRef.current = 2.0; // 4초 동안 이스터에그 지속
+        activeGlobalRunsRef.current = []; // 즉시 버퍼 초기화
+        useFieldStore.setState({
+          globalInputBuffer: [],
+          isOiiaActive: true,
+        });
+      } else {
+        useFieldStore.setState({
+          globalInputBuffer: currentGlobalKeys,
+        });
+      }
+
+      const currentRunnerState = store.runnerState;
 
       // 입력된 키를 단축키로 사용하는 모든 러너 탐색
       // 입력된 키를 단축키로 사용하고 현재 달리고 있지 않은 러너 중 첫 번째 러너를 탐색
@@ -29,11 +57,14 @@ const useGameLoop = () => {
         ([_, runnerData]) => runnerData.inputCode.includes(incomingKeyCode) && !runnerData.isRunning,
       );
 
-      if (!targetRunnerEntry) return;
+      if (!targetRunnerEntry) {
+        // 러너 매칭은 안 되었지만 버퍼 변경이 즉시 렌더링에 반영되도록 호출
+        store.syncDisplayScore();
+        return;
+      }
 
       const [key, runnerData] = targetRunnerEntry;
       const runnerId = Number(key);
-      const formattedKey = formatKey(incomingKeyCode);
 
       if (!activeRunsRef.current[runnerId]) {
         activeRunsRef.current[runnerId] = [];
@@ -61,14 +92,50 @@ const useGameLoop = () => {
       if (previousTimeRef.current !== null) {
         // 프레임 간 흐른 시간 계산 (초 단위)
         const deltaTime = (time - previousTimeRef.current) / 1000;
+
+        // 1. 이스터에그 지속 시간 차감 및 상태 해제 처리
+        if (oiiaTimeRef.current > 0) {
+          oiiaTimeRef.current -= deltaTime;
+          if (oiiaTimeRef.current <= 0) {
+            oiiaTimeRef.current = 0;
+            useFieldStore.setState({ isOiiaActive: false });
+          }
+        }
+
+        // 2. 전역 입력 버퍼 실시간 수명 차감 및 소멸 처리 (이스터에그 진행 중이 아닐 때만 유효함)
+        const globalRuns = activeGlobalRunsRef.current;
+        if (globalRuns.length > 0) {
+          globalRuns.forEach((run) => {
+            run.remainingTime -= deltaTime;
+          });
+          const activeGlobalRuns = globalRuns.filter((run) => run.remainingTime > 0);
+          activeGlobalRunsRef.current = activeGlobalRuns;
+
+          const nextBuffer = activeGlobalRuns.map((run) => run.key);
+          const currentStoreBuffer = useFieldStore.getState().globalInputBuffer;
+          if (nextBuffer.join(",") !== currentStoreBuffer.join(",")) {
+            useFieldStore.setState({ globalInputBuffer: nextBuffer });
+          }
+        } else {
+          const currentStoreBuffer = useFieldStore.getState().globalInputBuffer;
+          if (currentStoreBuffer.length > 0) {
+            useFieldStore.setState({ globalInputBuffer: [] });
+          }
+        }
+
         const currentRunnerState = useFieldStore.getState().runnerState;
+        const isOiiaActive = useFieldStore.getState().isOiiaActive;
 
         Object.keys(currentRunnerState).forEach((key) => {
           const index = Number(key);
           const runnerData = currentRunnerState[index];
           const runs = activeRunsRef.current[index] || [];
 
-          if (runs.length > 0) {
+          if (isOiiaActive) {
+            // Oiia Cat 재생 중: 모든 러너 강제 달리기 및 가속 점수 적용
+            runnerData.isRunning = true;
+            addScore(index, deltaTime * runnerData.scorePerSecondRun);
+          } else if (runs.length > 0) {
             // 1. 현재 살아있는 러닝 큐의 남은 시간들 차감
             runs.forEach((run) => {
               run.remainingTime -= deltaTime;
