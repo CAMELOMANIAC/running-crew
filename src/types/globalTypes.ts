@@ -18,6 +18,8 @@ export interface RunnerStats {
 
 export interface RunnerState extends RunnerStats {
   isRunning: boolean;
+  lastPressedKey: string | null;
+  inputBuffer: string[];
 }
 
 /**

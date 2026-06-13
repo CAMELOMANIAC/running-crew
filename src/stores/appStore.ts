@@ -17,28 +17,28 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   runnerData: {
     0: {
-      inputCode: ["KeyP", "KeyD"],
+      inputCode: ["KeyP", "KeyO"],
       runDuration: 1.0,
       scorePerSecondRun: 10.0,
-      scorePerSecondIdle: 0.1,
+      scorePerSecondIdle: 0.02,
     },
     1: {
-      inputCode: ["KeyO", "KeyB"],
+      inputCode: ["KeyO", "KeyI"],
       runDuration: 1.0,
       scorePerSecondRun: 10.0,
-      scorePerSecondIdle: 0.1,
+      scorePerSecondIdle: 0.02,
     },
     2: {
-      inputCode: ["KeyP", "KeyB"],
+      inputCode: ["KeyP", "KeyI"],
       runDuration: 1.5,
       scorePerSecondRun: 12.0,
-      scorePerSecondIdle: 0.1,
+      scorePerSecondIdle: 0.02,
     },
     3: {
-      inputCode: ["Left", "KeyB"],
+      inputCode: ["Left", "KeyA"],
       runDuration: 1.0,
       scorePerSecondRun: 10.0,
-      scorePerSecondIdle: 0.1,
+      scorePerSecondIdle: 0.02,
     },
   },
 

@@ -53,7 +53,9 @@ export const useFieldStore = create<FieldState>((set, get) => ({
 
         acc[runnerId] = {
           ...stats,
-          isRunning: false, // 속성 추가
+          isRunning: false,
+          lastPressedKey: null,
+          inputBuffer: [],
         };
 
         return acc;
@@ -79,9 +81,18 @@ export const useFieldStore = create<FieldState>((set, get) => ({
       finalDisplayScores[id] = Math.round(score * 100) / 100;
     });
 
+    // runnerState 내의 값이 매 루프나 입력에 따라 변경되므로, react가 리렌더링하도록 얕은 복사본을 설정합니다.
+    const currentRunnerState = get().runnerState;
+    const nextRunnerState: RunnerStateType = {};
+    Object.entries(currentRunnerState).forEach(([key, state]) => {
+      const id = Number(key);
+      nextRunnerState[id] = { ...state };
+    });
+
     set({
       displayTotalScore: finalTotalScore,
       displayScores: finalDisplayScores,
+      runnerState: nextRunnerState,
     });
   },
 

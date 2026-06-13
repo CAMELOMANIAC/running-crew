@@ -3,9 +3,16 @@ import { useEffect, useRef } from "react";
 import { EMIT_EVENT, GlobalInputEventType } from "../types/globalTypes";
 import { useFieldStore } from "../stores/fieldStore";
 
+const formatKey = (keyCode: string) => {
+  if (keyCode.startsWith("Key") && keyCode.length === 4) {
+    return keyCode.substring(3).toLowerCase();
+  }
+  return keyCode.toLowerCase();
+};
+
 const useGameLoop = () => {
   const addScore = useFieldStore((state) => state.addScore);
-  const runRemainingTimesRef = useRef<Record<number, number>>({});
+  const activeRunsRef = useRef<Record<number, { key: string; remainingTime: number }[]>>({});
   const previousTimeRef = useRef<number | null>(null);
   const syncDisplayScoreTimerRef = useRef(0);
   const updateScoreTimerRef = useRef(0);
@@ -16,20 +23,35 @@ const useGameLoop = () => {
       const incomingKeyCode = event.payload.mouse_button || event.payload.key_code;
       const currentRunnerState = useFieldStore.getState().runnerState;
 
-      // 단축키가 일치하고 "동시에 현재 달리고 있지 않은" 첫 번째 런너를 검색
+      // 입력된 키를 단축키로 사용하는 모든 러너 탐색
+      // 입력된 키를 단축키로 사용하고 현재 달리고 있지 않은 러너 중 첫 번째 러너를 탐색
       const targetRunnerEntry = Object.entries(currentRunnerState).find(
         ([_, runnerData]) => runnerData.inputCode.includes(incomingKeyCode) && !runnerData.isRunning,
       );
 
-      // 만약 같은 단축키를 쓰는 모든 런너가 이미 달리는 중이라면 핸들러 종료
       if (!targetRunnerEntry) return;
 
-      const targetRunner = Number(targetRunnerEntry[0]);
-      const runnerData = currentRunnerState[targetRunner]; // 최신 데이터 보장
+      const [key, runnerData] = targetRunnerEntry;
+      const runnerId = Number(key);
+      const formattedKey = formatKey(incomingKeyCode);
 
-      // 달리기 시작 설정 및 개별 runDuration 적용
+      if (!activeRunsRef.current[runnerId]) {
+        activeRunsRef.current[runnerId] = [];
+      }
+
+      // 새 러닝 수명 객체 추가 (독립된 runDuration 수명을 가짐)
+      activeRunsRef.current[runnerId].push({
+        key: formattedKey,
+        remainingTime: runnerData.runDuration,
+      });
+
+      // 실시간 상태 업데이트
       runnerData.isRunning = true;
-      runRemainingTimesRef.current[targetRunner] = runnerData.runDuration;
+      runnerData.lastPressedKey = formattedKey;
+      runnerData.inputBuffer = activeRunsRef.current[runnerId].map((run) => run.key);
+
+      // 즉시 동기화하여 키 입력을 즉각 반영
+      useFieldStore.getState().syncDisplayScore();
     });
 
     // 메인 게임 루프
@@ -44,20 +66,30 @@ const useGameLoop = () => {
         Object.keys(currentRunnerState).forEach((key) => {
           const index = Number(key);
           const runnerData = currentRunnerState[index];
+          const runs = activeRunsRef.current[index] || [];
 
-          if (runnerData.isRunning) {
-            // 남은 시간 차감
-            runRemainingTimesRef.current[index] -= deltaTime;
+          if (runs.length > 0) {
+            // 1. 현재 살아있는 러닝 큐의 남은 시간들 차감
+            runs.forEach((run) => {
+              run.remainingTime -= deltaTime;
+            });
 
-            // [변경] 개별 러너의 달릴 때 초당 점수(scorePerSecondRun) 적용
+            // 2. 수명이 완료된 러닝 항목 제거 (FIFO 구조로 앞에서부터 자연스레 제거됨)
+            const activeRuns = runs.filter((run) => run.remainingTime > 0);
+            activeRunsRef.current[index] = activeRuns;
+
+            // 3. 러너 달리기 상태 및 버퍼 업데이트
+            runnerData.isRunning = activeRuns.length > 0;
+            runnerData.inputBuffer = activeRuns.map((run) => run.key);
+
+            // 개별 러너의 달릴 때 초당 점수(scorePerSecondRun) 적용
             addScore(index, deltaTime * runnerData.scorePerSecondRun);
-
-            // 시간이 다 되면 달리기 종료
-            if (runRemainingTimesRef.current[index] <= 0) {
-              runnerData.isRunning = false;
-              runRemainingTimesRef.current[index] = 0;
-            }
           } else {
+            // 달리는 중이 아니면 리셋 및 쉬는 점수 가산
+            runnerData.isRunning = false;
+            runnerData.inputBuffer = [];
+            runnerData.lastPressedKey = null;
+
             // 개별 러너의 쉴 때 초당 점수(scorePerSecondIdle) 적용
             addScore(index, deltaTime * runnerData.scorePerSecondIdle);
           }

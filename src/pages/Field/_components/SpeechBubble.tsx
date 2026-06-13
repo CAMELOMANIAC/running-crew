@@ -75,7 +75,8 @@ const SpeechBubble = ({ number, runnerState }: RunnerProps) => {
 
   if (!croppedTexture) return null;
 
-  const inputCodeString = runnerState[number]?.inputCode[0].replace("Key", "") || "";
+  const lastPressedKey = runnerState[number]?.lastPressedKey || "";
+  const inputCodeString = lastPressedKey.toUpperCase();
 
   return (
     // 초기 상태는 보이지 않도록 alpha=0, visible=false 처리
