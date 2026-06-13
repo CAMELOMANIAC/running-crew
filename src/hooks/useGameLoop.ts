@@ -16,16 +16,16 @@ const useGameLoop = () => {
       const incomingKeyCode = event.payload.mouse_button || event.payload.key_code;
       const currentRunnerState = useFieldStore.getState().runnerState;
 
-      const targetRunnerEntry = Object.entries(currentRunnerState).find(([_, runnerData]) =>
-        runnerData.inputCode.includes(incomingKeyCode),
+      // 단축키가 일치하고 "동시에 현재 달리고 있지 않은" 첫 번째 런너를 검색
+      const targetRunnerEntry = Object.entries(currentRunnerState).find(
+        ([_, runnerData]) => runnerData.inputCode.includes(incomingKeyCode) && !runnerData.isRunning,
       );
 
+      // 만약 같은 단축키를 쓰는 모든 런너가 이미 달리는 중이라면 핸들러 종료
       if (!targetRunnerEntry) return;
+
       const targetRunner = Number(targetRunnerEntry[0]);
       const runnerData = currentRunnerState[targetRunner]; // 최신 데이터 보장
-
-      // 연타 차단: 이미 달리는 중이라면 무시
-      if (runnerData.isRunning) return;
 
       // 달리기 시작 설정 및 개별 runDuration 적용
       runnerData.isRunning = true;
