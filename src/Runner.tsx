@@ -1,7 +1,7 @@
-import { AnimatedSprite, Assets, Rectangle, Texture } from "pixi.js";
+import { AnimatedSprite, Assets, Container, Rectangle, Texture } from "pixi.js";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import walkImage from "./assets/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
-import runImage from "./assets/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
+import walkImage from "./assets/cats/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
+import runImage from "./assets/cats/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
 import { useTick } from "@pixi/react";
 import { RunnerStateType } from "./types/globalTypes";
 
@@ -21,7 +21,7 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
   const [walkFrames, setWalkFrames] = useState<Texture[]>([]);
   const [runFrames, setRunFrames] = useState<Texture[]>([]);
 
-  const spriteRef = useRef<AnimatedSprite | null>(null);
+  const containerRef = useRef<Container | null>(null);
   const currentGraphicState = useRef<boolean>(false);
 
   useEffect(() => {
@@ -54,22 +54,28 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
   }, []);
 
   useTick(() => {
-    if (!spriteRef.current || walkFrames.length === 0 || runFrames.length === 0) return;
+    if (!containerRef.current) return;
 
     const myIsRunning = runnerState[number]?.isRunning || false;
 
     if (myIsRunning !== currentGraphicState.current) {
       currentGraphicState.current = myIsRunning;
+      const nextTextures = myIsRunning ? runFrames : walkFrames;
 
-      spriteRef.current.textures = myIsRunning ? runFrames : walkFrames;
-      spriteRef.current.play();
+      // 부모 컨테이너 내부의 모든 자식(스프라이트 5개)을 돌며 텍스처 교체 및 재생
+      containerRef.current.children.forEach((child) => {
+        const sprite = child as AnimatedSprite;
+        sprite.textures = nextTextures;
+        sprite.play();
+      });
     }
   });
 
-  const spriteRefCallback = useCallback((instance: AnimatedSprite | null) => {
-    spriteRef.current = instance;
+  // 부모 컨테이너 전용 리프레시 콜백
+  const containerRefCallback = useCallback((instance: Container | null) => {
+    containerRef.current = instance;
     if (instance) {
-      instance.play();
+      instance.children.forEach((child) => (child as AnimatedSprite).play());
     }
   }, []);
 
@@ -77,14 +83,15 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
 
   return (
     hasTextures && (
-      <pixiContainer x={number * FRAME_WIDTH}>
-        <pixiAnimatedSprite
-          autoPlay={true}
-          textures={walkFrames} // 초기 상태는 걷기로 시작
-          animationSpeed={0.15}
-          scale={1}
-          ref={spriteRefCallback}
-        />
+      <pixiContainer x={number * FRAME_WIDTH} ref={containerRefCallback}>
+        {/* 상하좌우 외곽선용 (Ref 없음) */}
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={-1} y={0} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={1} y={0} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={0} y={-1} animationSpeed={0.15} />
+        <pixiAnimatedSprite textures={walkFrames} tint={0x000000} x={0} y={1} animationSpeed={0.15} />
+
+        {/* 정중앙 원본 캐릭터 (Ref 없음) */}
+        <pixiAnimatedSprite textures={walkFrames} x={0} y={0} animationSpeed={0.15} />
       </pixiContainer>
     )
   );
