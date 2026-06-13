@@ -1,13 +1,30 @@
+export const EMIT_EVENT = {
+  UPDATE_RUNNER: "updateRunner",
+  UPDATE_SCORE: "updateScore",
+  UPDATE_WINDOW_SETTING: "updateWindowSetting",
+  GLOBAL_INPUT_SIGNAL: "globalInputSignal",
+} as const;
+
 export interface GlobalInputEventType {
   payload: { event_type: string; key_code: string; mouse_button: string };
 }
 
-export interface runnerStateType {
-  [runnerNumber: number]: {
-    isRunning: boolean;
-    inputCode: string[];
-    runDuration: number; // 개별 달리기 지속 시간
-    scorePerSecondRun: number; // 개별 달릴 때 초당 점수
-    scorePerSecondIdle: number; // 개별 쉴 때 초당 점수
-  };
+export interface RunnerStats {
+  inputCode: string[];
+  runDuration: number;
+  scorePerSecondRun: number;
+  scorePerSecondIdle: number;
 }
+
+export interface RunnerState extends RunnerStats {
+  isRunning: boolean;
+}
+
+/**
+ * 러너 능력치 정보
+ */
+export type RunnerStatsType = Record<number, RunnerStats>;
+/**
+ * 러너 능력치 정보 + 렌더링 상태
+ */
+export type RunnerStateType = Record<number, RunnerState>;

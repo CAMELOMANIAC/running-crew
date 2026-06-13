@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import walkImage from "./assets/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
 import runImage from "./assets/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
 import { useTick } from "@pixi/react";
-import { runnerStateType } from "./types/globalTypes";
+import { RunnerStateType } from "./types/globalTypes";
 
 const FRAME_WIDTH = 50;
 const FRAME_HEIGHT = 50;
@@ -14,7 +14,7 @@ interface RunnerProps {
 }
 interface RunnerProps {
   number: number;
-  runnerState: runnerStateType;
+  runnerState: RunnerStateType;
 }
 
 const Runner = memo(({ number, runnerState }: RunnerProps) => {

@@ -1,7 +1,7 @@
 import { Application } from "@pixi/react";
 import { memo, RefObject } from "react";
 import Runner from "./Runner";
-import { useGameStore } from "./stores/gameStore";
+import { useFieldStore } from "./stores/fieldStore";
 
 interface FieldCanvasProps {
   parentRef: RefObject<HTMLDivElement | null>;
@@ -16,11 +16,11 @@ const FieldCanvas = ({ parentRef }: FieldCanvasProps) => {
 };
 
 const CanvasContent = memo(() => {
-  const rawRunnerState = useGameStore((state) => state.rawRunnerState);
+  const runnerState = useFieldStore((state) => state.runnerState);
   return (
     <>
-      {Object.entries(rawRunnerState).map((_, i) => (
-        <Runner number={i} key={i} runnerState={rawRunnerState} />
+      {Object.entries(runnerState).map((_, i) => (
+        <Runner number={i} key={i} runnerState={runnerState} />
       ))}
     </>
   );

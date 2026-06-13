@@ -5,8 +5,9 @@ import { listen } from "@tauri-apps/api/event";
 import FieldCanvas from "./FieldCanvas";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import Score from "./Score";
-import { useGameStore } from "./stores/gameStore";
 import useGameLoop from "./hooks/useGameLoop";
+import { EMIT_EVENT, RunnerStatsType } from "./types/globalTypes";
+import { useFieldStore } from "./stores/fieldStore";
 
 extend({
   Container,
@@ -24,21 +25,20 @@ const Field = () => {
   const [isWindowSetting, setIsWindowSetting] = useState(false); //필드 화면 설정
 
   useEffect(() => {
-    const unlistenSettingSignalPromise = listen<{ isWindowSetting: boolean }>("WindowSetting-signal", (event) => {
-      setIsWindowSetting(event.payload.isWindowSetting);
-    });
-    // 메인 창(App.tsx)에서 업그레이드 등 설정 변경 시 서브 창의 스토어로 동기화
-    const unlistenConfigPromise = listen("update-runner-config", (event: any) => {
-      const { rawRunnerState, scores } = event.payload;
-      const updatePayload: any = {};
-      if (rawRunnerState) updatePayload.rawRunnerState = rawRunnerState;
-      if (scores) updatePayload.scores = scores;
-      useGameStore.setState(updatePayload);
+    const unlistenWindowSettingPromise = listen<{ isWindowSetting: boolean }>(
+      EMIT_EVENT.UPDATE_WINDOW_SETTING,
+      (event) => {
+        setIsWindowSetting(event.payload.isWindowSetting);
+      },
+    );
+    // App에서 변경한 러너 정보를 적용
+    const unlistenUpdateRunnerPromise = listen(EMIT_EVENT.UPDATE_RUNNER, (event: { payload: RunnerStatsType }) => {
+      useFieldStore.getState().initRunnerState(event.payload);
     });
 
     return () => {
-      unlistenSettingSignalPromise.then((unlisten) => unlisten());
-      unlistenConfigPromise.then((unlisten) => unlisten());
+      unlistenWindowSettingPromise.then((unlisten) => unlisten());
+      unlistenUpdateRunnerPromise.then((unlisten) => unlisten());
     };
   }, []);
 
