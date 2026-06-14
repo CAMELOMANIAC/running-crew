@@ -1,10 +1,33 @@
 import { AnimatedSprite, Assets, Container, Rectangle, Texture } from "pixi.js";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import walkImage from "../../../assets/cats/Cat-1-Walk.png"; //https://luizmelo.itch.io/pet-cat-pack
-import runImage from "../../../assets/cats/Cat-1-Run.png"; //https://luizmelo.itch.io/pet-cat-pack
 import { useApplication, useTick } from "@pixi/react";
 import { RunnerStateType } from "../../../types/globalTypes";
 import SpeechBubble from "./SpeechBubble";
+
+import cat1Walk from "../../../assets/cats/Cat-1-Walk.png";
+import cat1Run from "../../../assets/cats/Cat-1-Run.png";
+import cat2Walk from "../../../assets/cats/Cat-2-Walk.png";
+import cat2Run from "../../../assets/cats/Cat-2-Run.png";
+import cat3Walk from "../../../assets/cats/Cat-3-Walk.png";
+import cat3Run from "../../../assets/cats/Cat-3-Run.png";
+import cat4Walk from "../../../assets/cats/Cat-4-Walk.png";
+import cat4Run from "../../../assets/cats/Cat-4-Run.png";
+import cat5Walk from "../../../assets/cats/Cat-5-Walk.png";
+import cat5Run from "../../../assets/cats/Cat-5-Run.png";
+import cat6Walk from "../../../assets/cats/Cat-6-Walk.png";
+import cat6Run from "../../../assets/cats/Cat-6-Run.png";
+
+// 어떤 스프라이트 값을 받느냐에 따라 매핑할 이미지 주소 맵
+const CAT_ASSETS: Record<string, { walk: string; run: string }> = {
+  runner1: { walk: cat1Walk, run: cat1Run },
+  runner2: { walk: cat2Walk, run: cat2Run },
+  runner3: { walk: cat3Walk, run: cat3Run },
+  runner4: { walk: cat4Walk, run: cat4Run },
+  runner5: { walk: cat5Walk, run: cat5Run },
+  runner6: { walk: cat6Walk, run: cat6Run },
+  // 기본값(fallback) 처리용 고양이 설정
+  default: { walk: cat1Walk, run: cat1Run },
+};
 
 const FRAME_WIDTH = 50;
 const FRAME_HEIGHT = 50;
@@ -29,9 +52,10 @@ const Runner = memo(({ number, runnerState }: RunnerProps) => {
 
   useEffect(() => {
     async function loadAllTextures() {
-      const walkBaseTexture = await Assets.load<Texture>(walkImage);
+      const runnerSprite = runnerState[number]?.runnerSprite || "default";
+      const walkBaseTexture = await Assets.load<Texture>(CAT_ASSETS[runnerSprite].walk);
       walkBaseTexture.source.scaleMode = "nearest";
-      const runBaseTexture = await Assets.load<Texture>(runImage);
+      const runBaseTexture = await Assets.load<Texture>(CAT_ASSETS[runnerSprite].run);
       runBaseTexture.source.scaleMode = "nearest";
 
       const walk: Texture[] = [];

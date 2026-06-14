@@ -10,6 +10,7 @@ export interface GlobalInputEventType {
 }
 
 export interface RunnerStats {
+  runnerSprite: string;
   inputCode: string[];
   runDuration: number;
   scorePerSecondRun: number;
