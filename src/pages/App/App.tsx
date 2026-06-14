@@ -3,6 +3,7 @@ import "./App.css";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useAppStore } from "../../stores/appStore";
 import { EMIT_EVENT } from "../../types/globalTypes";
+import { Link } from "react-router";
 //앱 윈도우 진입점
 function App() {
   useEffect(() => {
@@ -41,6 +42,7 @@ function App() {
         <button style={buttonStyle} onClick={startGame}>
           시작
         </button>
+        <Link to="/upgrade/1">업그레이드</Link>
       </div>
     </main>
   );
