@@ -1,4 +1,4 @@
-import masterBloodweb from "./../../assets/master-bloodweb.json";
+import masterBloodweb from "../../assets/master-bloodweb.json";
 
 interface Node {
   id: string;

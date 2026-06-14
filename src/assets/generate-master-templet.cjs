@@ -30,7 +30,7 @@ TIER_CONFIG.forEach(({ tier, radius, nodeCount }) => {
     const y = Math.round(radius * Math.sin(angleRadians) * 10) / 10;
 
     nodes.push({
-      id: `node_${i}`,
+      id: `node_${tier}_${i}`,
       tier,
       index: i,
       x,
