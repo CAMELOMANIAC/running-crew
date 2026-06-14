@@ -1,0 +1,814 @@
+{
+  "totalNodes": 37,
+  "totalLinks": 102,
+  "nodes": [
+    {
+      "id": "node_0",
+      "tier": 0,
+      "index": 0,
+      "x": 0,
+      "y": 0,
+      "angle": 0
+    },
+    {
+      "id": "node_0",
+      "tier": 1,
+      "index": 0,
+      "x": 140,
+      "y": 0,
+      "angle": 0
+    },
+    {
+      "id": "node_1",
+      "tier": 1,
+      "index": 1,
+      "x": 70,
+      "y": 121.2,
+      "angle": 60
+    },
+    {
+      "id": "node_2",
+      "tier": 1,
+      "index": 2,
+      "x": -70,
+      "y": 121.2,
+      "angle": 120
+    },
+    {
+      "id": "node_3",
+      "tier": 1,
+      "index": 3,
+      "x": -140,
+      "y": 0,
+      "angle": 180
+    },
+    {
+      "id": "node_4",
+      "tier": 1,
+      "index": 4,
+      "x": -70,
+      "y": -121.2,
+      "angle": 240
+    },
+    {
+      "id": "node_5",
+      "tier": 1,
+      "index": 5,
+      "x": 70,
+      "y": -121.2,
+      "angle": 300
+    },
+    {
+      "id": "node_0",
+      "tier": 2,
+      "index": 0,
+      "x": 260,
+      "y": 0,
+      "angle": 0
+    },
+    {
+      "id": "node_1",
+      "tier": 2,
+      "index": 1,
+      "x": 225.2,
+      "y": 130,
+      "angle": 30
+    },
+    {
+      "id": "node_2",
+      "tier": 2,
+      "index": 2,
+      "x": 130,
+      "y": 225.2,
+      "angle": 60
+    },
+    {
+      "id": "node_3",
+      "tier": 2,
+      "index": 3,
+      "x": 0,
+      "y": 260,
+      "angle": 90
+    },
+    {
+      "id": "node_4",
+      "tier": 2,
+      "index": 4,
+      "x": -130,
+      "y": 225.2,
+      "angle": 120
+    },
+    {
+      "id": "node_5",
+      "tier": 2,
+      "index": 5,
+      "x": -225.2,
+      "y": 130,
+      "angle": 150
+    },
+    {
+      "id": "node_6",
+      "tier": 2,
+      "index": 6,
+      "x": -260,
+      "y": 0,
+      "angle": 180
+    },
+    {
+      "id": "node_7",
+      "tier": 2,
+      "index": 7,
+      "x": -225.2,
+      "y": -130,
+      "angle": 210
+    },
+    {
+      "id": "node_8",
+      "tier": 2,
+      "index": 8,
+      "x": -130,
+      "y": -225.2,
+      "angle": 240
+    },
+    {
+      "id": "node_9",
+      "tier": 2,
+      "index": 9,
+      "x": 0,
+      "y": -260,
+      "angle": 270
+    },
+    {
+      "id": "node_10",
+      "tier": 2,
+      "index": 10,
+      "x": 130,
+      "y": -225.2,
+      "angle": 300
+    },
+    {
+      "id": "node_11",
+      "tier": 2,
+      "index": 11,
+      "x": 225.2,
+      "y": -130,
+      "angle": 330
+    },
+    {
+      "id": "node_0",
+      "tier": 3,
+      "index": 0,
+      "x": 380,
+      "y": 0,
+      "angle": 0
+    },
+    {
+      "id": "node_1",
+      "tier": 3,
+      "index": 1,
+      "x": 357.1,
+      "y": 130,
+      "angle": 20
+    },
+    {
+      "id": "node_2",
+      "tier": 3,
+      "index": 2,
+      "x": 291.1,
+      "y": 244.3,
+      "angle": 40
+    },
+    {
+      "id": "node_3",
+      "tier": 3,
+      "index": 3,
+      "x": 190,
+      "y": 329.1,
+      "angle": 60
+    },
+    {
+      "id": "node_4",
+      "tier": 3,
+      "index": 4,
+      "x": 66,
+      "y": 374.2,
+      "angle": 80
+    },
+    {
+      "id": "node_5",
+      "tier": 3,
+      "index": 5,
+      "x": -66,
+      "y": 374.2,
+      "angle": 100
+    },
+    {
+      "id": "node_6",
+      "tier": 3,
+      "index": 6,
+      "x": -190,
+      "y": 329.1,
+      "angle": 120
+    },
+    {
+      "id": "node_7",
+      "tier": 3,
+      "index": 7,
+      "x": -291.1,
+      "y": 244.3,
+      "angle": 140
+    },
+    {
+      "id": "node_8",
+      "tier": 3,
+      "index": 8,
+      "x": -357.1,
+      "y": 130,
+      "angle": 160
+    },
+    {
+      "id": "node_9",
+      "tier": 3,
+      "index": 9,
+      "x": -380,
+      "y": 0,
+      "angle": 180
+    },
+    {
+      "id": "node_10",
+      "tier": 3,
+      "index": 10,
+      "x": -357.1,
+      "y": -130,
+      "angle": 200
+    },
+    {
+      "id": "node_11",
+      "tier": 3,
+      "index": 11,
+      "x": -291.1,
+      "y": -244.3,
+      "angle": 220
+    },
+    {
+      "id": "node_12",
+      "tier": 3,
+      "index": 12,
+      "x": -190,
+      "y": -329.1,
+      "angle": 240
+    },
+    {
+      "id": "node_13",
+      "tier": 3,
+      "index": 13,
+      "x": -66,
+      "y": -374.2,
+      "angle": 260
+    },
+    {
+      "id": "node_14",
+      "tier": 3,
+      "index": 14,
+      "x": 66,
+      "y": -374.2,
+      "angle": 280
+    },
+    {
+      "id": "node_15",
+      "tier": 3,
+      "index": 15,
+      "x": 190,
+      "y": -329.1,
+      "angle": 300
+    },
+    {
+      "id": "node_16",
+      "tier": 3,
+      "index": 16,
+      "x": 291.1,
+      "y": -244.3,
+      "angle": 320
+    },
+    {
+      "id": "node_17",
+      "tier": 3,
+      "index": 17,
+      "x": 357.1,
+      "y": -130,
+      "angle": 340
+    }
+  ],
+  "links": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_4",
+      "target": "node_5",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_5",
+      "target": "node_0",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_4",
+      "target": "node_5",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_5",
+      "target": "node_6",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_6",
+      "target": "node_7",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_7",
+      "target": "node_8",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_8",
+      "target": "node_9",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_9",
+      "target": "node_10",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_10",
+      "target": "node_11",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_11",
+      "target": "node_0",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_4",
+      "target": "node_5",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_5",
+      "target": "node_6",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_6",
+      "target": "node_7",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_7",
+      "target": "node_8",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_8",
+      "target": "node_9",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_9",
+      "target": "node_10",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_10",
+      "target": "node_11",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_11",
+      "target": "node_12",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_12",
+      "target": "node_13",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_13",
+      "target": "node_14",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_14",
+      "target": "node_15",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_15",
+      "target": "node_16",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_16",
+      "target": "node_17",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_17",
+      "target": "node_0",
+      "type": "HORIZONTAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_0",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_2",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_3",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_4",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_5",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_0",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_0",
+      "target": "node_11",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_1",
+      "target": "node_1",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_1",
+      "target": "node_3",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_2",
+      "target": "node_4",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_2",
+      "target": "node_5",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_3",
+      "target": "node_5",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_3",
+      "target": "node_6",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_3",
+      "target": "node_7",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_4",
+      "target": "node_7",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_4",
+      "target": "node_8",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_4",
+      "target": "node_9",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_5",
+      "target": "node_9",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_5",
+      "target": "node_10",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_5",
+      "target": "node_11",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_0",
+      "target": "node_0",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_0",
+      "target": "node_17",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_1",
+      "target": "node_0",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_1",
+      "target": "node_1",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_1",
+      "target": "node_3",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_2",
+      "target": "node_2",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_2",
+      "target": "node_4",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_3",
+      "target": "node_3",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_3",
+      "target": "node_5",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_3",
+      "target": "node_6",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_4",
+      "target": "node_5",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_4",
+      "target": "node_6",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_4",
+      "target": "node_7",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_5",
+      "target": "node_6",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_5",
+      "target": "node_7",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_5",
+      "target": "node_8",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_5",
+      "target": "node_9",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_6",
+      "target": "node_8",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_6",
+      "target": "node_9",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_6",
+      "target": "node_10",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_7",
+      "target": "node_9",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_7",
+      "target": "node_10",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_7",
+      "target": "node_11",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_7",
+      "target": "node_12",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_8",
+      "target": "node_11",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_8",
+      "target": "node_12",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_8",
+      "target": "node_13",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_9",
+      "target": "node_12",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_9",
+      "target": "node_13",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_9",
+      "target": "node_14",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_9",
+      "target": "node_15",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_10",
+      "target": "node_14",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_10",
+      "target": "node_15",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_10",
+      "target": "node_16",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_11",
+      "target": "node_0",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_11",
+      "target": "node_15",
+      "type": "CROSS"
+    },
+    {
+      "source": "node_11",
+      "target": "node_16",
+      "type": "VERTICAL"
+    },
+    {
+      "source": "node_11",
+      "target": "node_17",
+      "type": "VERTICAL"
+    }
+  ]
+}
