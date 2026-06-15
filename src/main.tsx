@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router";
-import App from "./App";
-import Field from "./Field";
+import App from "./pages/App/App";
+import Field from "./pages/Field/Field";
+import Upgrade from "./pages/Upgrade/Upgrade";
 
 const router = createHashRouter([
   {
@@ -12,6 +13,10 @@ const router = createHashRouter([
   {
     path: "/field",
     element: <Field />,
+  },
+  {
+    path: "/upgrade/:id",
+    element: <Upgrade />,
   },
 ]);
 
