@@ -63,6 +63,87 @@ const centerTextStyle = new TextStyle({
   align: "center",
 });
 
+// ─── Pixel-art (dot) drawing helpers ───────────────────────────────
+// 도트 한 칸의 크기. 클수록 더 거친 픽셀 느낌.
+const PIXEL = 4;
+
+// 좌표를 도트 그리드에 맞춰 스냅 (선명한 픽셀 렌더링용)
+const snap = (v: number) => Math.round(v / PIXEL) * PIXEL;
+
+// 도트로 채운 원(disc) + 테두리 링을 그린다
+const drawPixelDisc = (
+  g: any,
+  radius: number,
+  fillColor: number,
+  fillAlpha: number,
+  borderColor: number,
+  borderAlpha: number,
+  borderDots: number // 테두리 두께 (도트 개수)
+) => {
+  const r = snap(radius);
+  const inner = r - borderDots * PIXEL;
+  for (let cy = -r; cy < r; cy += PIXEL) {
+    for (let cx = -r; cx < r; cx += PIXEL) {
+      const px = cx + PIXEL / 2;
+      const py = cy + PIXEL / 2;
+      const dist = Math.sqrt(px * px + py * py);
+      if (dist > r) continue;
+      g.rect(cx, cy, PIXEL, PIXEL);
+      if (dist >= inner) {
+        g.fill({ color: borderColor, alpha: borderAlpha });
+      } else {
+        g.fill({ color: fillColor, alpha: fillAlpha });
+      }
+    }
+  }
+};
+
+// 두 점 사이를 도트(점선)로 잇는다
+const drawPixelLine = (
+  g: any,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  color: number,
+  alpha: number,
+  dotSize: number
+) => {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  if (len === 0) return;
+  const ux = dx / len;
+  const uy = dy / len;
+  const step = dotSize * 2; // 도트 + 동일 크기 간격
+  const count = Math.floor(len / step);
+  for (let i = 0; i <= count; i++) {
+    const px = snap(x1 + ux * i * step);
+    const py = snap(y1 + uy * i * step);
+    g.rect(px - dotSize / 2, py - dotSize / 2, dotSize, dotSize);
+    g.fill({ color, alpha });
+  }
+};
+
+// 도트로 이루어진 원형 링 (배경 / 호버 글로우용)
+const drawPixelRing = (
+  g: any,
+  radius: number,
+  color: number,
+  alpha: number,
+  dotSize: number
+) => {
+  const circumference = 2 * Math.PI * radius;
+  const dotCount = Math.max(8, Math.floor(circumference / (dotSize * 3)));
+  for (let i = 0; i < dotCount; i++) {
+    const a = (i / dotCount) * Math.PI * 2;
+    const px = snap(Math.cos(a) * radius);
+    const py = snap(Math.sin(a) * radius);
+    g.rect(px - dotSize / 2, py - dotSize / 2, dotSize, dotSize);
+    g.fill({ color, alpha });
+  }
+};
+
 // Node component
 const NodeComponent = ({
   node,
@@ -93,7 +174,7 @@ const NodeComponent = ({
       let borderCol = 0x3d313a;
       let fillCol = 0x1c171d;
       let alpha = 0.85;
-      let borderWidth = 2;
+      let borderDots = 1;
 
       if (node.tier > 0) {
         if (geneDef.rarity === "common") {
@@ -110,31 +191,25 @@ const NodeComponent = ({
       if (isPurchased) {
         fillCol = borderCol;
         alpha = 0.95;
-        borderWidth = 4;
+        borderDots = 2;
       } else if (isPurchasable) {
         fillCol = 0x110712;
         alpha = 0.9;
-        borderWidth = 3;
+        borderDots = 2;
       } else {
         fillCol = 0x1a1a1a;
         alpha = 0.55;
-        borderWidth = 1.5;
+        borderDots = 1;
       }
 
+      // 호버 시 도트 글로우 링
       if (isHovered) {
-        g.circle(0, 0, radius + 8);
-        g.fill({ color: borderCol, alpha: 0.15 });
-        borderWidth += 1;
+        drawPixelRing(g, radius + 10, borderCol, 0.5, PIXEL);
+        borderDots += 1;
       }
 
-      g.circle(0, 0, radius);
-      g.fill({ color: fillCol, alpha });
-      g.stroke({ width: borderWidth, color: borderCol });
-
-      if (isPurchasable || isPurchased) {
-        g.circle(0, 0, radius - 4);
-        g.stroke({ width: 1, color: borderCol, alpha: 0.4 });
-      }
+      const borderAlpha = isPurchased || isPurchasable ? 1 : 0.85;
+      drawPixelDisc(g, radius, fillCol, alpha, borderCol, borderAlpha, borderDots);
     },
     [node.tier, geneDef.rarity, isPurchased, isPurchasable, isHovered, radius]
   );
@@ -201,24 +276,22 @@ const BloodwebLinks = ({
 
         let color = 0x3a2536;
         let alpha = 0.4;
-        let width = 1.5;
+        let dotSize = PIXEL;
 
         if (srcPurchased && tgtPurchased) {
           color = 0xff3c64;
           alpha = 0.9;
-          width = 3.5;
+          dotSize = PIXEL * 2;
         } else if (
           (srcPurchased && purchasableNodeIds.has(tgt.id)) ||
           (tgtPurchased && purchasableNodeIds.has(src.id))
         ) {
           color = 0x9e2a40;
-          alpha = 0.6;
-          width = 2.5;
+          alpha = 0.7;
+          dotSize = PIXEL * 1.5;
         }
 
-        g.moveTo(src.x, src.y);
-        g.lineTo(tgt.x, tgt.y);
-        g.stroke({ width, color, alpha });
+        drawPixelLine(g, src.x, src.y, tgt.x, tgt.y, color, alpha, dotSize);
       });
     },
     [links, nodesMap, purchasedNodeIds, purchasableNodeIds]
@@ -315,14 +388,9 @@ const BloodwebCanvasContent = ({
 
   const drawBackground = useCallback((g: any) => {
     g.clear();
-    g.circle(0, 0, 140);
-    g.stroke({ width: 1.5, color: 0x3a2536, alpha: 0.25 });
-
-    g.circle(0, 0, 260);
-    g.stroke({ width: 1.5, color: 0x3a2536, alpha: 0.2 });
-
-    g.circle(0, 0, 380);
-    g.stroke({ width: 1.5, color: 0x3a2536, alpha: 0.15 });
+    drawPixelRing(g, 140, 0x3a2536, 0.3, PIXEL);
+    drawPixelRing(g, 260, 0x3a2536, 0.22, PIXEL);
+    drawPixelRing(g, 380, 0x3a2536, 0.16, PIXEL);
   }, []);
 
   const nodesMap = useMemo(() => {
@@ -499,7 +567,7 @@ const Upgrade = () => {
   return (
     <div className="upgrade-container">
       <div className="canvas-container" ref={canvasParentRef} style={{ width: "100vw", height: "100vh" }}>
-        <Application resizeTo={canvasParentRef} backgroundAlpha={0}>
+        <Application resizeTo={canvasParentRef} backgroundAlpha={0} antialias={false}>
           <BloodwebCanvasContent
             bloodNodes={bloodNodes}
             filteredLinks={filteredLinks}
