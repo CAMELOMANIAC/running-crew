@@ -12,7 +12,7 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  score: 0,
+  score: 10000,
   setScore: (newScore) => set({ score: newScore }),
 
   runnerData: {

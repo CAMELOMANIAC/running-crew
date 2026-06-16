@@ -48,9 +48,7 @@ const GENE_DEFS: Record<string, GeneDef> = {
 };
 
 const getGeneDef = (type: string): GeneDef => {
-  return (
-    GENE_DEFS[type] || { cost: 100, rarity: "common", stat: "scorePerSecondRun", value: 0.5 }
-  );
+  return GENE_DEFS[type] || { cost: 100, rarity: "common", stat: "scorePerSecondRun", value: 0.5 };
 };
 
 const emojiTextStyle = new TextStyle({
@@ -65,7 +63,7 @@ const centerTextStyle = new TextStyle({
 
 // ─── Pixel-art (dot) drawing helpers ───────────────────────────────
 // 도트 한 칸의 크기. 클수록 더 거친 픽셀 느낌.
-const PIXEL = 4;
+const PIXEL = 2;
 
 // 좌표를 도트 그리드에 맞춰 스냅 (선명한 픽셀 렌더링용)
 const snap = (v: number) => Math.round(v / PIXEL) * PIXEL;
@@ -78,7 +76,7 @@ const drawPixelDisc = (
   fillAlpha: number,
   borderColor: number,
   borderAlpha: number,
-  borderDots: number // 테두리 두께 (도트 개수)
+  borderDots: number, // 테두리 두께 (도트 개수)
 ) => {
   const r = snap(radius);
   const inner = r - borderDots * PIXEL;
@@ -107,7 +105,7 @@ const drawPixelLine = (
   y2: number,
   color: number,
   alpha: number,
-  dotSize: number
+  dotSize: number,
 ) => {
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -126,13 +124,7 @@ const drawPixelLine = (
 };
 
 // 도트로 이루어진 원형 링 (배경 / 호버 글로우용)
-const drawPixelRing = (
-  g: any,
-  radius: number,
-  color: number,
-  alpha: number,
-  dotSize: number
-) => {
+const drawPixelRing = (g: any, radius: number, color: number, alpha: number, dotSize: number) => {
   const circumference = 2 * Math.PI * radius;
   const dotCount = Math.max(8, Math.floor(circumference / (dotSize * 3)));
   for (let i = 0; i < dotCount; i++) {
@@ -149,6 +141,7 @@ const NodeComponent = ({
   node,
   isPurchased,
   isPurchasable,
+  isSelected,
   isHovered,
   onPointerOver,
   onPointerOut,
@@ -158,6 +151,7 @@ const NodeComponent = ({
   node: BloodNode;
   isPurchased: boolean;
   isPurchasable: boolean;
+  isSelected: boolean;
   isHovered: boolean;
   onPointerOver: () => void;
   onPointerOut: () => void;
@@ -202,6 +196,11 @@ const NodeComponent = ({
         borderDots = 1;
       }
 
+      // 선택 시 테두리 도트 글로우 (하늘색)
+      if (isSelected) {
+        drawPixelRing(g, radius + 6, 0x00e5ff, 0.9, PIXEL);
+      }
+
       // 호버 시 도트 글로우 링
       if (isHovered) {
         drawPixelRing(g, radius + 10, borderCol, 0.5, PIXEL);
@@ -211,7 +210,7 @@ const NodeComponent = ({
       const borderAlpha = isPurchased || isPurchasable ? 1 : 0.85;
       drawPixelDisc(g, radius, fillCol, alpha, borderCol, borderAlpha, borderDots);
     },
-    [node.tier, geneDef.rarity, isPurchased, isPurchasable, isHovered, radius]
+    [node.tier, geneDef.rarity, isPurchased, isPurchasable, isSelected, isHovered, radius],
   );
 
   let scale = 1.0;
@@ -228,6 +227,9 @@ const NodeComponent = ({
     else if (geneDef.stat === "scorePerSecondIdle") emoji = "💤";
   }
 
+  // 구매했거나 구매가능한(인접한) 요소들만 드러나도록 함
+  const isVisible = isPurchased || isPurchasable;
+
   return (
     <pixiContainer
       x={node.x}
@@ -238,15 +240,10 @@ const NodeComponent = ({
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut}
       onPointerTap={onPointerTap}
+      visible={isVisible}
     >
       <pixiGraphics draw={drawNode} />
-      <pixiText
-        text={emoji}
-        anchor={0.5}
-        x={0}
-        y={0}
-        style={node.tier === 0 ? centerTextStyle : emojiTextStyle}
-      />
+      <pixiText text={emoji} anchor={0.5} x={0} y={0} style={node.tier === 0 ? centerTextStyle : emojiTextStyle} />
     </pixiContainer>
   );
 };
@@ -274,6 +271,12 @@ const BloodwebLinks = ({
         const srcPurchased = purchasedNodeIds.has(src.id);
         const tgtPurchased = purchasedNodeIds.has(tgt.id);
 
+        const srcVisible = srcPurchased || purchasableNodeIds.has(src.id);
+        const tgtVisible = tgtPurchased || purchasableNodeIds.has(tgt.id);
+
+        // 양 끝 노드 중 하나라도 가려져 있다면 링크도 그리지 않음 (Fog of War)
+        if (!srcVisible || !tgtVisible) return;
+
         let color = 0x3a2536;
         let alpha = 0.4;
         let dotSize = PIXEL;
@@ -294,7 +297,7 @@ const BloodwebLinks = ({
         drawPixelLine(g, src.x, src.y, tgt.x, tgt.y, color, alpha, dotSize);
       });
     },
-    [links, nodesMap, purchasedNodeIds, purchasableNodeIds]
+    [links, nodesMap, purchasedNodeIds, purchasableNodeIds],
   );
 
   return <pixiGraphics draw={draw} />;
@@ -307,8 +310,10 @@ const BloodwebCanvasContent = ({
   purchasedNodeIds,
   purchasableNodeIds,
   hoveredNodeId,
+  selectedNodeId,
   setHoveredNodeId,
   onNodeClick,
+  onBgClick,
   pulseScale,
 }: {
   bloodNodes: BloodNode[];
@@ -316,13 +321,16 @@ const BloodwebCanvasContent = ({
   purchasedNodeIds: Set<string>;
   purchasableNodeIds: Set<string>;
   hoveredNodeId: string | null;
+  selectedNodeId: string | null;
   setHoveredNodeId: (id: string | null) => void;
   onNodeClick: (node: BloodNode) => void;
+  onBgClick: () => void;
   pulseScale: number;
 }) => {
   const { app } = useApplication();
   const viewportRef = useRef<any>(null);
   const isDragging = useRef(false);
+  const hasDragged = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const panRef = useRef({ x: 0, y: 0 });
   const zoomRef = useRef(1.0);
@@ -366,6 +374,7 @@ const BloodwebCanvasContent = ({
 
   const handleBgPointerDown = (e: any) => {
     isDragging.current = true;
+    hasDragged.current = false;
     dragStart.current = {
       x: e.data.global.x - panRef.current.x,
       y: e.data.global.y - panRef.current.y,
@@ -376,6 +385,11 @@ const BloodwebCanvasContent = ({
     if (!isDragging.current) return;
     const newX = e.data.global.x - dragStart.current.x;
     const newY = e.data.global.y - dragStart.current.y;
+
+    if (Math.abs(newX - panRef.current.x) > 3 || Math.abs(newY - panRef.current.y) > 3) {
+      hasDragged.current = true;
+    }
+
     panRef.current = { x: newX, y: newY };
     if (viewportRef.current) {
       viewportRef.current.position.set(newX, newY);
@@ -384,6 +398,12 @@ const BloodwebCanvasContent = ({
 
   const handleBgPointerUp = () => {
     isDragging.current = false;
+  };
+
+  const handleBgPointerTap = () => {
+    if (!hasDragged.current) {
+      onBgClick();
+    }
   };
 
   const drawBackground = useCallback((g: any) => {
@@ -407,6 +427,7 @@ const BloodwebCanvasContent = ({
         onPointerMove={handleBgPointerMove}
         onPointerUp={handleBgPointerUp}
         onPointerUpOutside={handleBgPointerUp}
+        onPointerTap={handleBgPointerTap}
       >
         <pixiGraphics
           draw={(g) => {
@@ -435,6 +456,7 @@ const BloodwebCanvasContent = ({
             node={node}
             isPurchased={purchasedNodeIds.has(node.id)}
             isPurchasable={purchasableNodeIds.has(node.id)}
+            isSelected={selectedNodeId === node.id}
             isHovered={hoveredNodeId === node.id}
             onPointerOver={() => setHoveredNodeId(node.id)}
             onPointerOut={() => setHoveredNodeId(null)}
@@ -456,12 +478,13 @@ const Upgrade = () => {
   const runner = useAppStore((state) => state.runnerData[runnerId]);
   const score = useAppStore((state) => state.score);
 
-  const [bloodweb, setBloodweb] = useState<{ bloodNodes: BloodNode[]; filteredLinks: BloodLink[] }>(() =>
-    generateGene() as any
+  const [bloodweb, setBloodweb] = useState<{ bloodNodes: BloodNode[]; filteredLinks: BloodLink[] }>(
+    () => generateGene() as any,
   );
   const { bloodNodes, filteredLinks } = bloodweb;
 
   const [purchasedNodeIds, setPurchasedNodeIds] = useState<Set<string>>(new Set());
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [pulseScale, setPulseScale] = useState(1.0);
 
@@ -473,6 +496,7 @@ const Upgrade = () => {
       setPurchasedNodeIds(new Set());
     }
     setHoveredNodeId(null);
+    setSelectedNodeId(null);
   }, [bloodNodes]);
 
   useEffect(() => {
@@ -532,17 +556,27 @@ const Upgrade = () => {
       useAppStore.getState().emitRunnerState();
       setPurchasedNodeIds((prev) => new Set([...prev, node.id]));
     },
-    [score, runnerId]
+    [score, runnerId],
   );
 
   const handleNodeClick = useCallback(
     (node: BloodNode) => {
-      if (purchasableNodeIds.has(node.id)) {
-        purchaseNode(node);
+      if (selectedNodeId === node.id) {
+        // 이미 선택되어 있는 상태에서 한 번 더 탭하면 구매 시도
+        if (purchasableNodeIds.has(node.id)) {
+          purchaseNode(node);
+        }
+      } else {
+        // 첫 번째 탭 시 선택 표시
+        setSelectedNodeId(node.id);
       }
     },
-    [purchasableNodeIds, purchaseNode]
+    [selectedNodeId, purchasableNodeIds, purchaseNode],
   );
+
+  const handleBgClick = useCallback(() => {
+    setSelectedNodeId(null);
+  }, []);
 
   // Auto-regenerate when all genes are completed
   useEffect(() => {
@@ -574,8 +608,10 @@ const Upgrade = () => {
             purchasedNodeIds={purchasedNodeIds}
             purchasableNodeIds={purchasableNodeIds}
             hoveredNodeId={hoveredNodeId}
+            selectedNodeId={selectedNodeId}
             setHoveredNodeId={setHoveredNodeId}
             onNodeClick={handleNodeClick}
+            onBgClick={handleBgClick}
             pulseScale={pulseScale}
           />
         </Application>
