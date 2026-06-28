@@ -1,21 +1,11 @@
-import { ChangeEvent, CSSProperties, useEffect } from "react";
+import { ChangeEvent, CSSProperties } from "react";
 import "./App.css";
-import { emit, listen } from "@tauri-apps/api/event";
+import { emit } from "@tauri-apps/api/event";
 import { useAppStore } from "../../stores/appStore";
 import { EMIT_EVENT } from "../../types/globalTypes";
 import { Link } from "react-router";
 //앱 윈도우 진입점
 function App() {
-  useEffect(() => {
-    // 서브 창(Field.tsx)에서 전송해주는 실시간 점수를 메인 창의 스토어에 동기화
-    const unlistenScorePromise = listen<number>(EMIT_EVENT.UPDATE_SCORE, (event) => {
-      useAppStore.getState().setScore(event.payload);
-    });
-
-    return () => {
-      unlistenScorePromise.then((unlisten) => unlisten());
-    };
-  }, []);
 
   const sendMessageToOtherWindow = async (e: ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
     // 첫 번째 인자: 커스텀 이벤트 이름

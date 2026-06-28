@@ -4,6 +4,7 @@ import { createHashRouter, RouterProvider } from "react-router";
 import App from "./pages/App/App";
 import Field from "./pages/Field/Field";
 import Upgrade from "./pages/Upgrade/Upgrade";
+import { GlobalScoreListener } from "./components/GlobalScoreListener";
 
 const router = createHashRouter([
   {
@@ -22,6 +23,7 @@ const router = createHashRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
+    <GlobalScoreListener />
     <RouterProvider router={router} />
   </React.StrictMode>,
 );

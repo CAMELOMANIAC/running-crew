@@ -49,3 +49,208 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* UI Overlay on top of canvas */
+.upgrade-ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none; /* Let clicks pass through if not on buttons */
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.back-button {
+  pointer-events: auto; /* Enable clicks */
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e0e0e0;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.back-button:active {
+  transform: translateY(1px);
+}
+
+.score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 60, 100, 0.25);
+  padding: 8px 16px;
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.score-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ff3c64;
+  margin-bottom: 2px;
+}
+
+.score-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: monospace;
+}
+
+/* Selected Node Detail Panel */
+.detail-panel {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  width: 320px;
+  background: rgba(10, 5, 12, 0.85);
+  border: 1px solid rgba(255, 60, 100, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+  pointer-events: auto; /* Enable clicks */
+  box-sizing: border-box;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 60, 100, 0.15);
+  padding-bottom: 10px;
+}
+
+.rarity-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.rarity-badge.common {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.rarity-badge.rare {
+  background: rgba(0, 150, 255, 0.15);
+  color: #0096ff;
+  border: 1px solid rgba(0, 150, 255, 0.3);
+}
+
+.rarity-badge.legendary {
+  background: rgba(255, 215, 0, 0.15);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.detail-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.detail-body {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detail-label {
+  color: #a0a0a0;
+}
+
+.detail-value {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.detail-value.cost {
+  color: #ff3c64;
+  font-family: monospace;
+}
+
+.detail-actions {
+  display: flex;
+  width: 100%;
+}
+
+.upgrade-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upgrade-btn.active {
+  background: #ff3c64;
+  color: white;
+  box-shadow: 0 0 12px rgba(255, 60, 100, 0.4);
+}
+
+.upgrade-btn.active:hover {
+  background: #ff577a;
+  transform: translateY(-1px);
+}
+
+.upgrade-btn.active:active {
+  transform: translateY(1px);
+}
+
+.upgrade-btn:disabled {
+  cursor: not-allowed;
+}
+
+.upgrade-btn.purchased {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upgrade-btn.no-money {
+  background: rgba(255, 60, 100, 0.1);
+  color: rgba(255, 60, 100, 0.5);
+  border: 1px solid rgba(255, 60, 100, 0.2);
+}
+
+.upgrade-btn.locked {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+

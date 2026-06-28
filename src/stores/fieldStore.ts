@@ -28,6 +28,10 @@ interface FieldState {
    * 논리 영역에서 계산한 총점을 app 윈도우로 전송하는 함수
    */
   emitScore: () => void;
+  /**
+   * 점수 차감 함수 (상점 업그레이드 시)
+   */
+  deductScore: (amount: number) => void;
 }
 
 export const useFieldStore = create<FieldState>((set, get) => ({
@@ -103,5 +107,34 @@ export const useFieldStore = create<FieldState>((set, get) => ({
   emitScore: () => {
     const displayTotalScore = get().displayTotalScore;
     emit(EMIT_EVENT.UPDATE_SCORE, displayTotalScore);
+  },
+
+  deductScore: (amount) => {
+    set((state) => {
+      const nextScores = { ...state.scores };
+      let remaining = amount;
+
+      const runnerIds = Object.keys(nextScores).map(Number);
+      for (const id of runnerIds) {
+        const score = nextScores[id] ?? 0;
+        if (score >= remaining) {
+          nextScores[id] = score - remaining;
+          remaining = 0;
+          break;
+        } else {
+          remaining -= score;
+          nextScores[id] = 0;
+        }
+      }
+
+      if (remaining > 0 && runnerIds.length > 0) {
+        const firstId = runnerIds[0];
+        nextScores[firstId] = (nextScores[firstId] ?? 0) - remaining;
+      }
+
+      return { scores: nextScores };
+    });
+    get().syncDisplayScore();
+    get().emitScore();
   },
 }));

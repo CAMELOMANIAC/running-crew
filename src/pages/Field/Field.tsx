@@ -36,10 +36,15 @@ const Field = () => {
     const unlistenUpdateRunnerPromise = listen(EMIT_EVENT.UPDATE_RUNNER, (event: { payload: RunnerStatsType }) => {
       useFieldStore.getState().initRunnerState(event.payload);
     });
+    // 상점에서 차감된 점수 적용
+    const unlistenDeductScorePromise = listen<number>(EMIT_EVENT.DEDUCT_SCORE, (event) => {
+      useFieldStore.getState().deductScore(event.payload);
+    });
 
     return () => {
       unlistenWindowSettingPromise.then((unlisten) => unlisten());
       unlistenUpdateRunnerPromise.then((unlisten) => unlisten());
+      unlistenDeductScorePromise.then((unlisten) => unlisten());
     };
   }, []);
 

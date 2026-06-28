@@ -3,6 +3,7 @@ export const EMIT_EVENT = {
   UPDATE_SCORE: "updateScore",
   UPDATE_WINDOW_SETTING: "updateWindowSetting",
   GLOBAL_INPUT_SIGNAL: "globalInputSignal",
+  DEDUCT_SCORE: "deductScore",
 } as const;
 
 export interface GlobalInputEventType {

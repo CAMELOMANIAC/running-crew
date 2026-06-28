@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { Container, Graphics, TextStyle, Text } from "pixi.js";
 import { extend, Application, useApplication } from "@pixi/react";
 import { useAppStore } from "../../stores/appStore";
 import generateGene from "./generateGene";
 import "./Upgrade.css";
+import { emit } from "@tauri-apps/api/event";
+import { EMIT_EVENT } from "../../types/globalTypes";
 
 // Extend Pixi React components
 extend({
@@ -49,6 +51,23 @@ const GENE_DEFS: Record<string, GeneDef> = {
 
 const getGeneDef = (type: string): GeneDef => {
   return GENE_DEFS[type] || { cost: 100, rarity: "common", stat: "scorePerSecondRun", value: 0.5 };
+};
+
+const getStatLabel = (stat: string) => {
+  switch (stat) {
+    case "scorePerSecondRun":
+      return "초당 달리기 점수";
+    case "runDuration":
+      return "달리기 지속 시간";
+    case "scorePerSecondIdle":
+      return "초당 쉬기 점수";
+    default:
+      return stat;
+  }
+};
+
+const getStatValueSign = (_stat: string, value: number) => {
+  return `+${value}`;
 };
 
 const emojiTextStyle = new TextStyle({
@@ -472,7 +491,8 @@ const BloodwebCanvasContent = ({
 // Main Component
 const Upgrade = () => {
   const { id } = useParams<{ id: string }>();
-  const canvasParentRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [resizeElement, setResizeElement] = useState<HTMLDivElement | null>(null);
 
   const runnerId = id ? parseInt(id, 10) : 0;
   const runner = useAppStore((state) => state.runnerData[runnerId]);
@@ -524,6 +544,26 @@ const Upgrade = () => {
     return purchasables;
   }, [filteredLinks, purchasedNodeIds]);
 
+  const selectedNode = useMemo(() => {
+    if (!selectedNodeId) return null;
+    return bloodNodes.find((n) => n.id === selectedNodeId) || null;
+  }, [selectedNodeId, bloodNodes]);
+
+  const selectedGeneDef = useMemo(() => {
+    if (!selectedNode || selectedNode.tier === 0) return null;
+    return getGeneDef(selectedNode.type);
+  }, [selectedNode]);
+
+  const isSelectedNodePurchasable = useMemo(() => {
+    if (!selectedNodeId) return false;
+    return purchasableNodeIds.has(selectedNodeId);
+  }, [selectedNodeId, purchasableNodeIds]);
+
+  const isSelectedNodePurchased = useMemo(() => {
+    if (!selectedNodeId) return false;
+    return purchasedNodeIds.has(selectedNodeId);
+  }, [selectedNodeId, purchasedNodeIds]);
+
   const purchaseNode = useCallback(
     (node: BloodNode) => {
       const geneDef = getGeneDef(node.type);
@@ -554,6 +594,7 @@ const Upgrade = () => {
       });
 
       useAppStore.getState().emitRunnerState();
+      emit(EMIT_EVENT.DEDUCT_SCORE, geneDef.cost);
       setPurchasedNodeIds((prev) => new Set([...prev, node.id]));
     },
     [score, runnerId],
@@ -561,17 +602,9 @@ const Upgrade = () => {
 
   const handleNodeClick = useCallback(
     (node: BloodNode) => {
-      if (selectedNodeId === node.id) {
-        // 이미 선택되어 있는 상태에서 한 번 더 탭하면 구매 시도
-        if (purchasableNodeIds.has(node.id)) {
-          purchaseNode(node);
-        }
-      } else {
-        // 첫 번째 탭 시 선택 표시
-        setSelectedNodeId(node.id);
-      }
+      setSelectedNodeId(node.id);
     },
-    [selectedNodeId, purchasableNodeIds, purchaseNode],
+    [],
   );
 
   const handleBgClick = useCallback(() => {
@@ -600,21 +633,76 @@ const Upgrade = () => {
 
   return (
     <div className="upgrade-container">
-      <div className="canvas-container" ref={canvasParentRef} style={{ width: "100vw", height: "100vh" }}>
-        <Application resizeTo={canvasParentRef} backgroundAlpha={0} antialias={false}>
-          <BloodwebCanvasContent
-            bloodNodes={bloodNodes}
-            filteredLinks={filteredLinks}
-            purchasedNodeIds={purchasedNodeIds}
-            purchasableNodeIds={purchasableNodeIds}
-            hoveredNodeId={hoveredNodeId}
-            selectedNodeId={selectedNodeId}
-            setHoveredNodeId={setHoveredNodeId}
-            onNodeClick={handleNodeClick}
-            onBgClick={handleBgClick}
-            pulseScale={pulseScale}
-          />
-        </Application>
+      <div className="upgrade-ui-overlay">
+        <button className="back-button" onClick={() => navigate("/")}>
+          ← 뒤로 가기
+        </button>
+        <div className="score-display">
+          <span className="score-label">SCORE</span>
+          <span className="score-value">{score.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        </div>
+      </div>
+
+      {/* Selected Node Details Panel */}
+      {selectedNode && selectedNode.tier > 0 && selectedGeneDef && (
+        <div className="detail-panel">
+          <div className="detail-header">
+            <span className={`rarity-badge ${selectedGeneDef.rarity}`}>
+              {selectedGeneDef.rarity.toUpperCase()}
+            </span>
+            <h3 className="detail-title">{getStatLabel(selectedGeneDef.stat)}</h3>
+          </div>
+          <div className="detail-body">
+            <div className="detail-row">
+              <span className="detail-label">효과</span>
+              <span className="detail-value">{getStatValueSign(selectedGeneDef.stat, selectedGeneDef.value)}</span>
+            </div>
+            <div className="detail-row">
+              <span className="detail-label">비용</span>
+              <span className="detail-value cost">{selectedGeneDef.cost} SCORE</span>
+            </div>
+          </div>
+          <div className="detail-actions">
+            {isSelectedNodePurchased ? (
+              <button className="upgrade-btn purchased" disabled>
+                구매 완료
+              </button>
+            ) : isSelectedNodePurchasable ? (
+              score >= selectedGeneDef.cost ? (
+                <button className="upgrade-btn active" onClick={() => purchaseNode(selectedNode)}>
+                  업그레이드
+                </button>
+              ) : (
+                <button className="upgrade-btn no-money" disabled>
+                  점수 부족
+                </button>
+              )
+            ) : (
+              <button className="upgrade-btn locked" disabled>
+                잠김 (이전 노드 필요)
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="canvas-container" ref={setResizeElement} style={{ width: "100vw", height: "100vh" }}>
+        {resizeElement && (
+          <Application resizeTo={resizeElement} backgroundAlpha={0} antialias={false}>
+            <BloodwebCanvasContent
+              bloodNodes={bloodNodes}
+              filteredLinks={filteredLinks}
+              purchasedNodeIds={purchasedNodeIds}
+              purchasableNodeIds={purchasableNodeIds}
+              hoveredNodeId={hoveredNodeId}
+              selectedNodeId={selectedNodeId}
+              setHoveredNodeId={setHoveredNodeId}
+              onNodeClick={handleNodeClick}
+              onBgClick={handleBgClick}
+              pulseScale={pulseScale}
+            />
+          </Application>
+        )}
       </div>
     </div>
   );
